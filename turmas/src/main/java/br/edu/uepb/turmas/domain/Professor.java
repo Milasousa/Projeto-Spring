@@ -13,13 +13,15 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.transaction.Transactional;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
 
 @Entity
 @Transactional
@@ -29,13 +31,13 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @Builder
-@Table(name = "professores", uniqueConstraints= {
-    @UniqueConstraint(columnNames ={"email","idMatricula"})
+@Table(name = "professores", uniqueConstraints = {
+        @UniqueConstraint(columnNames = { "email", "idMatricula" })
 })
 public class Professor {
-    
+
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idMatricula;
 
     @Column(name = "nome", nullable = false)
@@ -47,9 +49,9 @@ public class Professor {
     @Column(name = "email", nullable = false)
     private String email;
 
-    //disciplinas
+    @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "idMatriculaProfessor",referencedColumnName = "idMatricula")
+    @JoinColumn(name = "idMatriculaProfessor", referencedColumnName = "idMatricula")
     private List<Turma> turma;
 
 }

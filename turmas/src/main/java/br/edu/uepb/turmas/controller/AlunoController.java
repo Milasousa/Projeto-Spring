@@ -1,10 +1,8 @@
 package br.edu.uepb.turmas.controller;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
-
-import javax.servlet.http.HttpServletResponse;
-
 import br.edu.uepb.turmas.domain.Aluno;
 import br.edu.uepb.turmas.repository.AlunoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,29 +35,43 @@ public class AlunoController {
 
     @PostMapping
     public Aluno criarAlunos(@RequestBody Aluno aluno) {
-            if (!(alunoRepository.findById(aluno.getIdMatricula()) != null)) {
-                throw new ResponseStatusException(HttpStatus.CONFLICT, "Aluno já existe com estes dados");
-            }else if((alunoRepository.findBynome(aluno.getEmail()) != null)){
-                throw new ResponseStatusException(HttpStatus.CONFLICT, "Aluno já existe com estes dados");
-            }else{
-                return alunoRepository.save(aluno);
-            }
-            
-
+        if ((verificarPorId(aluno.getIdMatricula())) || (verificarPorEmail(aluno.getEmail()))) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Já existe um Aluno com essa matricula ou e-mail");
+        } else {
+            return alunoRepository.save(aluno);
         }
+    }
 
     @PutMapping("/{id}")
     public Aluno atualizarAlunos(@PathVariable("id") Long id, @RequestBody Aluno aluno) {
-        return alunoRepository.save(aluno);
+        try {
+            if ((alunoRepository.findById(id).get()) == null) {
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        "Não existe nenhum Aluno com essa matricula: " + id);
+            }
+            return alunoRepository.save(aluno);
+        } catch (NoSuchElementException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+                    "Não existe nenhum Aluno com essa matricula: " + id);
+        }
     }
 
     @DeleteMapping("/{id}")
     public void apagarAlunos(@PathVariable Long id) {
         try {
             alunoRepository.delete(alunoRepository.findById(id).get());
-        
-        } catch (RuntimeException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Aluno não encontrado");
+        } catch (NoSuchElementException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+                    "Não existe nenhum Aluno com essa matricula: " + id);
         }
+    }
+
+    public boolean verificarPorId(Long id) {
+        return alunoRepository.existsById(id);
+    }
+
+    public boolean verificarPorEmail(String email) {
+        return alunoRepository.existsByemail(email);
     }
 }

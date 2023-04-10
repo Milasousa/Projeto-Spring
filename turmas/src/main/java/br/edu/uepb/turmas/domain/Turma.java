@@ -1,4 +1,5 @@
 package br.edu.uepb.turmas.domain;
+
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Column;
@@ -24,9 +25,9 @@ import lombok.Setter;
 
 @Table(name = "turmas")
 public class Turma {
-    
+
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "nomeDaDisciplina", nullable = false)
