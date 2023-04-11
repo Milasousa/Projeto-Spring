@@ -72,29 +72,46 @@ public class TurmaController {
                     "Não existe nenhuma Turma com esse identificador: " + id);
         }
     }
-    //@PatchMapping("/{turmaId}/matriculas/{alunoId}/turmas/{profId}")
+
     @PatchMapping("/{turmaId}/alunos/{alunoId}")
-    public Turma vincularTurmaAluno(@PathVariable Long turmaId,@PathVariable Long alunoId) {
-        Aluno aluno=alunorepository.findById(alunoId).get();
-        Turma turma= turmarepository.findById(turmaId).get();
-        turma.setAluno(aluno);
-        return turmarepository.save(turma);
+    public Turma vincularTurmaAluno(@PathVariable Long turmaId, @PathVariable Long alunoId) {
+        try {
+            Aluno aluno = alunorepository.findById(alunoId).get();
+            Turma turma = turmarepository.findById(turmaId).get();
+            turma.setAluno(aluno);
+            return turmarepository.save(turma);
+        } catch (NoSuchElementException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+                    "Não foi encontrado");
+        }
+
     }
+
     @PatchMapping("/{turmaId}/professores/{profId}")
-    public Turma vincularTurmaProfessor(@PathVariable Long turmaId,@PathVariable Long profId) {
-        Professor prof=professorrepository.findById(profId).get();
-        Turma turma= turmarepository.findById(turmaId).get();
-        turma.setProf(prof);
-        return turmarepository.save(turma);
+    public Turma vincularTurmaProfessor(@PathVariable Long turmaId, @PathVariable Long profId) {
+        try {
+            Professor prof = professorrepository.findById(profId).get();
+            Turma turma = turmarepository.findById(turmaId).get();
+            turma.setProf(prof);
+            return turmarepository.save(turma);
+        } catch (NoSuchElementException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+                    "Não foi encontrado");
+        }
     }
 
     @PatchMapping("/{turmaId}/matriculas/{alunoId}/turmas/{profId}")
-    public Turma vincularTurma(@PathVariable Long turmaId,@PathVariable Long alunoId,@PathVariable Long profId) {
-        Professor prof=professorrepository.findById(profId).get();
-        Aluno aluno=alunorepository.findById(alunoId).get();
-        Turma turma= turmarepository.findById(turmaId).get();
-        turma.setAluno(aluno);
-        turma.setProf(prof);
-        return turmarepository.save(turma);
+    public Turma vincularTurma(@PathVariable Long turmaId, @PathVariable Long alunoId, @PathVariable Long profId) {
+        try {
+            Professor prof = professorrepository.findById(profId).get();
+            Aluno aluno = alunorepository.findById(alunoId).get();
+            Turma turma = turmarepository.findById(turmaId).get();
+            turma.setAluno(aluno);
+            turma.setProf(prof);
+            return turmarepository.save(turma);
+        } catch (NoSuchElementException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+                    "Não foi encontrado");
+        }
     }
 }
