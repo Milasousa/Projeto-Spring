@@ -1,17 +1,19 @@
 package br.edu.uepb.turmas.controller;
 
 import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
-import br.edu.uepb.turmas.domain.Aluno;
-import br.edu.uepb.turmas.domain.Professor;
+import br.edu.uepb.turmas.domain.ErroRespostaGenerica;
 import br.edu.uepb.turmas.domain.Turma;
-import br.edu.uepb.turmas.repository.AlunoRepository;
-import br.edu.uepb.turmas.repository.ProfessorRepository;
-import br.edu.uepb.turmas.repository.TurmaRepository;
+import br.edu.uepb.turmas.dto.TurmaDTO;
+import br.edu.uepb.turmas.mapper.TurmaMapper;
+import br.edu.uepb.turmas.services.TurmaService;
+import javassist.NotFoundException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.ResponseEntity.BodyBuilder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -20,98 +22,93 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequestMapping("/turmas")
 public class TurmaController {
+    @Autowired
+    private TurmaMapper turmaMapper;
 
     @Autowired
-    private TurmaRepository turmarepository;
-    @Autowired
-    private AlunoRepository alunorepository;
-    @Autowired
-    private ProfessorRepository professorrepository;
+    private TurmaService turmaService;
+
 
     @GetMapping
-    public List<Turma> getTurmas() {
-        return turmarepository.findAll();
+    public List<TurmaDTO> getTurmas() {
+        List<Turma> turmas = turmaService.listAllTurmas();
+        return turmas.stream()
+                .map(turmaMapper::convertToTurmaDTO)
+                .collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
-    public Optional<Turma> getTurmasById(@PathVariable Long id) {
-        return turmarepository.findById(id);
+    public ResponseEntity<?> getTurmasById(@PathVariable Long id) {
+        try {
+            return new ResponseEntity<>(turmaMapper.convertToTurmaDTO(turmaService.findById(id)), HttpStatus.OK);
+        } catch (NotFoundException e) {
+            return ResponseEntity.badRequest().body(new ErroRespostaGenerica(e.getMessage()));
+        }
     }
-
     @PostMapping
-    public Turma criarTurma(@RequestBody Turma turma) {
-        return turmarepository.save(turma);
+    public ResponseEntity<?> criarTurma(@RequestBody TurmaDTO  turmaDTO) {
+            Turma turma = turmaMapper.convertFromTurmaDTO(turmaDTO);
+            return new ResponseEntity<>(turmaService.criarTurma(turma), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public Turma atualizarTurma(@PathVariable("id") Long id, @RequestBody Turma turma) {
+    public ResponseEntity<?> atualizarTurma(@PathVariable("id") Long id, @RequestBody TurmaDTO  turmaDTO) throws NotFoundException {
         try {
-            if ((turmarepository.findById(id).get()) == null) {
-                throw new ResponseStatusException(HttpStatus.NOT_FOUND,
-                        "Não existe nenhuma Turma com esse identificador: " + id);
-            }
-            return turmarepository.save(turma);
-        } catch (NoSuchElementException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
-                    "Não existe nenhuma Turma com esse identificador: " + id);
+            Turma turma = turmaMapper.convertFromTurmaDTO(turmaDTO);
+            return new ResponseEntity<>(turmaMapper.convertToTurmaDTO(turmaService.atualizarTurma(id,turma)), HttpStatus.OK);
+        } catch (NotFoundException e) {
+            return ((BodyBuilder) ResponseEntity.notFound()).body(new ErroRespostaGenerica(e.getMessage()));
+
         }
     }
 
     @DeleteMapping("/{id}")
-    public void apagarTurma(@PathVariable Long id) {
+    public @ResponseBody ResponseEntity<?> apagarTurma(@PathVariable ("id")  Long id) {
         try {
-            turmarepository.delete(turmarepository.findById(id).get());
-        } catch (NoSuchElementException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
-                    "Não existe nenhuma Turma com esse identificador: " + id);
+            turmaService.apagarTurma(id);
+            return new ResponseEntity<>( HttpStatus.NO_CONTENT);
+
+        } catch (NotFoundException e) {
+            return ((BodyBuilder) ResponseEntity.notFound()).body(new ErroRespostaGenerica(e.getMessage()));
+
         }
     }
 
     @PatchMapping("/{turmaId}/alunos/{alunoId}")
-    public Turma vincularTurmaAluno(@PathVariable Long turmaId, @PathVariable Long alunoId) {
-        try {
-            Aluno aluno = alunorepository.findById(alunoId).get();
-            Turma turma = turmarepository.findById(turmaId).get();
-            turma.setAluno(aluno);
-            return turmarepository.save(turma);
-        } catch (NoSuchElementException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
-                    "Não foi encontrado");
-        }
+    public ResponseEntity<?> vincularTurmaAluno(@PathVariable("turmaId") Long turmaId, @PathVariable("alunoId") Long alunoId) throws NotFoundException {
+try {
+    return new ResponseEntity<>(turmaService.vincularTurmaAluno(turmaId, alunoId), HttpStatus.CREATED);
 
+} catch (NotFoundException e) {
+    return ((BodyBuilder) ResponseEntity.notFound()).body(new ErroRespostaGenerica(e.getMessage()));
+
+}
     }
 
+    
     @PatchMapping("/{turmaId}/professores/{profId}")
-    public Turma vincularTurmaProfessor(@PathVariable Long turmaId, @PathVariable Long profId) {
-        try {
-            Professor prof = professorrepository.findById(profId).get();
-            Turma turma = turmarepository.findById(turmaId).get();
-            turma.setProf(prof);
-            return turmarepository.save(turma);
-        } catch (NoSuchElementException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
-                    "Não foi encontrado");
-        }
+    public ResponseEntity<?> vincularTurmaProfessor(@PathVariable("turmaId") Long turmaId, @PathVariable("profId") Long profId)throws NotFoundException {
+try {
+    return new ResponseEntity<>(turmaService.vincularTurmaProfessor(turmaId, profId), HttpStatus.CREATED);
+
+} catch (NotFoundException e) {
+    return ((BodyBuilder) ResponseEntity.notFound()).body(new ErroRespostaGenerica(e.getMessage()));
+}
     }
 
     @PatchMapping("/{turmaId}/matriculas/{alunoId}/turmas/{profId}")
-    public Turma vincularTurma(@PathVariable Long turmaId, @PathVariable Long alunoId, @PathVariable Long profId) {
-        try {
-            Professor prof = professorrepository.findById(profId).get();
-            Aluno aluno = alunorepository.findById(alunoId).get();
-            Turma turma = turmarepository.findById(turmaId).get();
-            turma.setAluno(aluno);
-            turma.setProf(prof);
-            return turmarepository.save(turma);
-        } catch (NoSuchElementException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
-                    "Não foi encontrado");
-        }
+    public ResponseEntity<?> vincularTurma(@PathVariable("turmaId") Long turmaId, @PathVariable("alunoId")  Long alunoId, @PathVariable("profId") Long profId) throws NotFoundException {
+try {
+    return new ResponseEntity<>(turmaService.vincularTurma(turmaId,alunoId,profId), HttpStatus.CREATED);
+
+} catch (Exception e) {
+    return ((BodyBuilder) ResponseEntity.notFound()).body(new ErroRespostaGenerica(e.getMessage()));
+}
     }
 }
