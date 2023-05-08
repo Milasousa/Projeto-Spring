@@ -16,8 +16,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.edu.uepb.turmas.domain.ErroRespostaGenerica;
 import br.edu.uepb.turmas.domain.Professor;
+import br.edu.uepb.turmas.dto.ErroRespostaGenericaDTO;
 import br.edu.uepb.turmas.dto.ProfessorDTO;
 import br.edu.uepb.turmas.exceptions.DadosIguaisException;
 import br.edu.uepb.turmas.mapper.ProfessorMapper;
@@ -47,7 +47,7 @@ public class ProfessorController {
             return new ResponseEntity<>(professorMapper.convertToProfessorDTO(professorService.findById(id)),
                     HttpStatus.OK);
         } catch (NotFoundException e) {
-            return ResponseEntity.badRequest().body(new ErroRespostaGenerica(e.getMessage()));
+            return ResponseEntity.badRequest().body(new ErroRespostaGenericaDTO(e.getMessage()));
         }
     }
 
@@ -57,7 +57,7 @@ public class ProfessorController {
             Professor professor = professorMapper.convertFromProfessorDTO(professorDTO);
             return new ResponseEntity<>(professorService.criarProfessor(professor), HttpStatus.CREATED);
         } catch (DadosIguaisException e) {
-            return ResponseEntity.badRequest().body(new ErroRespostaGenerica(e.getMessage()));
+            return ResponseEntity.badRequest().body(new ErroRespostaGenericaDTO(e.getMessage()));
         }
     }
 
@@ -71,7 +71,7 @@ public class ProfessorController {
                     HttpStatus.OK);
 
         } catch (NotFoundException e) {
-            return ((BodyBuilder) ResponseEntity.notFound()).body(new ErroRespostaGenerica(e.getMessage()));
+            return ((BodyBuilder) ResponseEntity.notFound()).body(new ErroRespostaGenericaDTO(e.getMessage()));
         }
     }
 
@@ -82,7 +82,7 @@ public class ProfessorController {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 
         } catch (Exception e) {
-            return ((BodyBuilder) ResponseEntity.notFound()).body(new ErroRespostaGenerica(e.getMessage()));
+            return ((BodyBuilder) ResponseEntity.notFound()).body(new ErroRespostaGenericaDTO(e.getMessage()));
         }
     }
 }

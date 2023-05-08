@@ -4,8 +4,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import br.edu.uepb.turmas.domain.Aluno;
-import br.edu.uepb.turmas.domain.ErroRespostaGenerica;
 import br.edu.uepb.turmas.dto.AlunoDTO;
+import br.edu.uepb.turmas.dto.ErroRespostaGenericaDTO;
 import br.edu.uepb.turmas.exceptions.DadosIguaisException;
 import br.edu.uepb.turmas.mapper.AlunoMapper;
 import br.edu.uepb.turmas.services.AlunoService;
@@ -46,7 +46,7 @@ public class AlunoController {
         try {
             return new ResponseEntity<>(alunoMapper.convertToAlunoDTO(alunoService.findById(id)), HttpStatus.OK);
         } catch (NotFoundException e) {
-            return ResponseEntity.badRequest().body(new ErroRespostaGenerica(e.getMessage()));
+            return ResponseEntity.badRequest().body(new ErroRespostaGenericaDTO(e.getMessage()));
         }
     }
 
@@ -56,7 +56,7 @@ public class AlunoController {
             Aluno aluno = alunoMapper.convertFromAlunoDTO(alunoDTO);
             return new ResponseEntity<>(alunoService.criarAlunos(aluno), HttpStatus.CREATED);
         } catch (DadosIguaisException e) {
-            return ResponseEntity.badRequest().body(new ErroRespostaGenerica(e.getMessage()));
+            return ResponseEntity.badRequest().body(new ErroRespostaGenericaDTO(e.getMessage()));
         }
     }
 
@@ -68,7 +68,7 @@ public class AlunoController {
             return new ResponseEntity<>(alunoMapper.convertToAlunoDTO(alunoService.atualizarAlunos(id, aluno)),
                     HttpStatus.OK);
         } catch (NotFoundException e) {
-            return ((BodyBuilder) ResponseEntity.notFound()).body(new ErroRespostaGenerica(e.getMessage()));
+            return ((BodyBuilder) ResponseEntity.notFound()).body(new ErroRespostaGenericaDTO(e.getMessage()));
         }
     }
 
@@ -79,7 +79,7 @@ public class AlunoController {
             alunoService.apagarAlunos(id);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } catch (Exception e) {
-            return ((BodyBuilder) ResponseEntity.notFound()).body(new ErroRespostaGenerica(e.getMessage()));
+            return ((BodyBuilder) ResponseEntity.notFound()).body(new ErroRespostaGenericaDTO(e.getMessage()));
         }
     }
 }

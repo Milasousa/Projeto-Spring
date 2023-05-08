@@ -3,8 +3,8 @@ package br.edu.uepb.turmas.controller;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import br.edu.uepb.turmas.domain.ErroRespostaGenerica;
 import br.edu.uepb.turmas.domain.Turma;
+import br.edu.uepb.turmas.dto.ErroRespostaGenericaDTO;
 import br.edu.uepb.turmas.dto.TurmaDTO;
 import br.edu.uepb.turmas.mapper.TurmaMapper;
 import br.edu.uepb.turmas.services.TurmaService;
@@ -48,7 +48,7 @@ public class TurmaController {
         try {
             return new ResponseEntity<>(turmaMapper.convertToTurmaDTO(turmaService.findById(id)), HttpStatus.OK);
         } catch (NotFoundException e) {
-            return ResponseEntity.badRequest().body(new ErroRespostaGenerica(e.getMessage()));
+            return ResponseEntity.badRequest().body(new ErroRespostaGenericaDTO(e.getMessage()));
         }
     }
     @PostMapping
@@ -63,7 +63,7 @@ public class TurmaController {
             Turma turma = turmaMapper.convertFromTurmaDTO(turmaDTO);
             return new ResponseEntity<>(turmaMapper.convertToTurmaDTO(turmaService.atualizarTurma(id,turma)), HttpStatus.OK);
         } catch (NotFoundException e) {
-            return ((BodyBuilder) ResponseEntity.notFound()).body(new ErroRespostaGenerica(e.getMessage()));
+            return ((BodyBuilder) ResponseEntity.notFound()).body(new ErroRespostaGenericaDTO(e.getMessage()));
 
         }
     }
@@ -75,7 +75,7 @@ public class TurmaController {
             return new ResponseEntity<>( HttpStatus.NO_CONTENT);
 
         } catch (NotFoundException e) {
-            return ((BodyBuilder) ResponseEntity.notFound()).body(new ErroRespostaGenerica(e.getMessage()));
+            return ((BodyBuilder) ResponseEntity.notFound()).body(new ErroRespostaGenericaDTO(e.getMessage()));
 
         }
     }
@@ -86,7 +86,7 @@ try {
     return new ResponseEntity<>(turmaService.vincularTurmaAluno(turmaId, alunoId), HttpStatus.CREATED);
 
 } catch (NotFoundException e) {
-    return ((BodyBuilder) ResponseEntity.notFound()).body(new ErroRespostaGenerica(e.getMessage()));
+    return ((BodyBuilder) ResponseEntity.notFound()).body(new ErroRespostaGenericaDTO(e.getMessage()));
 
 }
     }
@@ -98,7 +98,7 @@ try {
     return new ResponseEntity<>(turmaService.vincularTurmaProfessor(turmaId, profId), HttpStatus.CREATED);
 
 } catch (NotFoundException e) {
-    return ((BodyBuilder) ResponseEntity.notFound()).body(new ErroRespostaGenerica(e.getMessage()));
+    return ((BodyBuilder) ResponseEntity.notFound()).body(new ErroRespostaGenericaDTO(e.getMessage()));
 }
     }
 
@@ -108,7 +108,7 @@ try {
     return new ResponseEntity<>(turmaService.vincularTurma(turmaId,alunoId,profId), HttpStatus.CREATED);
 
 } catch (Exception e) {
-    return ((BodyBuilder) ResponseEntity.notFound()).body(new ErroRespostaGenerica(e.getMessage()));
+    return ((BodyBuilder) ResponseEntity.notFound()).body(new ErroRespostaGenericaDTO(e.getMessage()));
 }
     }
 }

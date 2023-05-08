@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Configuration;
 import br.edu.uepb.turmas.mapper.AlunoMapper;
 import br.edu.uepb.turmas.mapper.ProfessorMapper;
 import br.edu.uepb.turmas.mapper.TurmaMapper;
+import br.edu.uepb.turmas.mapper.UserMapper;
 
 @Configuration
 public class TurmasMapperConfig {  
@@ -27,4 +28,9 @@ public class TurmasMapperConfig {
     public TurmaMapper turmaMapper() {
         return new TurmaMapper();
     } 
+
+    @Bean
+    public UserMapper userMapper() {
+        return new UserMapper();
+    }
 }
