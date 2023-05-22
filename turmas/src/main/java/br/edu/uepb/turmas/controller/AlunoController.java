@@ -1,12 +1,20 @@
 package br.edu.uepb.turmas.controller;
 
 import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
+import java.util.stream.Collectors;
+
 import br.edu.uepb.turmas.domain.Aluno;
-import br.edu.uepb.turmas.repository.AlunoRepository;
+import br.edu.uepb.turmas.dto.AlunoDTO;
+import br.edu.uepb.turmas.dto.ErroRespostaGenericaDTO;
+import br.edu.uepb.turmas.exceptions.DadosIguaisException;
+import br.edu.uepb.turmas.mapper.AlunoMapper;
+import br.edu.uepb.turmas.services.AlunoService;
+import javassist.NotFoundException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.ResponseEntity.BodyBuilder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,63 +23,63 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequestMapping("/alunos")
 public class AlunoController {
     @Autowired
-    private AlunoRepository alunoRepository;
+    private AlunoMapper alunoMapper;
+
+    @Autowired
+    private AlunoService alunoService;
 
     @GetMapping
-    public List<Aluno> getAlunos() {
-        return alunoRepository.findAll();
+    public List<AlunoDTO> getAlunos() {
+        List<Aluno> alunos = alunoService.listAllAlunos();
+        return alunos.stream()
+                .map(alunoMapper::convertToAlunoDTO)
+                .collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
-    public Optional<Aluno> getAlunosById(@PathVariable Long id) {
-        return alunoRepository.findById(id);
+    public ResponseEntity<?> getAlunosById(@PathVariable Long id) {
+        try {
+            return new ResponseEntity<>(alunoMapper.convertToAlunoDTO(alunoService.findById(id)), HttpStatus.OK);
+        } catch (NotFoundException e) {
+            return ResponseEntity.badRequest().body(new ErroRespostaGenericaDTO(e.getMessage()));
+        }
     }
 
     @PostMapping
-    public Aluno criarAlunos(@RequestBody Aluno aluno) {
-        if ((verificarPorId(aluno.getIdMatricula())) || (verificarPorEmail(aluno.getEmail()))) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                    "Já existe um Aluno com essa matricula ou e-mail");
-        } else {
-            return alunoRepository.save(aluno);
+    public ResponseEntity<?> criarAlunos(@RequestBody AlunoDTO alunoDTO) {
+        try {
+            Aluno aluno = alunoMapper.convertFromAlunoDTO(alunoDTO);
+            return new ResponseEntity<>(alunoService.criarAlunos(aluno), HttpStatus.CREATED);
+        } catch (DadosIguaisException e) {
+            return ResponseEntity.badRequest().body(new ErroRespostaGenericaDTO(e.getMessage()));
         }
     }
 
     @PutMapping("/{id}")
-    public Aluno atualizarAlunos(@PathVariable("id") Long id, @RequestBody Aluno aluno) {
+    public ResponseEntity<?> atualizarAlunos(@PathVariable("id") Long id, @RequestBody AlunoDTO alunoDTO)
+            throws NotFoundException {
         try {
-            if ((alunoRepository.findById(id).get()) == null) {
-                throw new ResponseStatusException(HttpStatus.NOT_FOUND,
-                        "Não existe nenhum Aluno com essa matricula: " + id);
-            }
-            return alunoRepository.save(aluno);
-        } catch (NoSuchElementException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
-                    "Não existe nenhum Aluno com essa matricula: " + id);
+            Aluno aluno = alunoMapper.convertFromAlunoDTO(alunoDTO);
+            return new ResponseEntity<>(alunoMapper.convertToAlunoDTO(alunoService.atualizarAlunos(id, aluno)),
+                    HttpStatus.OK);
+        } catch (NotFoundException e) {
+            return ((BodyBuilder) ResponseEntity.notFound()).body(new ErroRespostaGenericaDTO(e.getMessage()));
         }
     }
 
     @DeleteMapping("/{id}")
-    public void apagarAlunos(@PathVariable Long id) {
+    public ResponseEntity<?> apagarAlunos(@PathVariable Long id) throws NotFoundException {
+
         try {
-            alunoRepository.delete(alunoRepository.findById(id).get());
-        } catch (NoSuchElementException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
-                    "Não existe nenhum Aluno com essa matricula: " + id);
+            alunoService.apagarAlunos(id);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } catch (Exception e) {
+            return ((BodyBuilder) ResponseEntity.notFound()).body(new ErroRespostaGenericaDTO(e.getMessage()));
         }
-    }
-
-    public boolean verificarPorId(Long id) {
-        return alunoRepository.existsById(id);
-    }
-
-    public boolean verificarPorEmail(String email) {
-        return alunoRepository.existsByemail(email);
     }
 }
