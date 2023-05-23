@@ -50,15 +50,32 @@ public class ProjetoController {
             return ResponseEntity.badRequest().body(new ErroRespostaGenericaDTO(e.getMessage()));
         }
     }
-    @PostMapping
-    public ResponseEntity<?> criarProjeto(@RequestBody ProjetoDTO  projetoDTO) {
+    @GetMapping("alunos/{projetoId}/{alunoId}")
+    public  List<ProjetoDTO> listAllAlunos(@PathVariable("projetoId") Long projetoId,@PathVariable("alunoId") Long alunoId) throws NotFoundException {
+      // try {
+            //return new ResponseEntity<>(projetoMapper.convertToProjetoDTO(projetoService.listAllAlunos(projetoId,alunoId)), HttpStatus.OK);
+            List<Projeto> projeto = projetoService.listAllAlunos(projetoId,alunoId);
+            return projeto.stream()
+            .map(projetoMapper::convertToProjetoDTO)
+            .collect(Collectors.toList());
+        //} catch (NotFoundException e) {
+           // return ResponseEntity.badRequest().body(new ErroRespostaGenericaDTO(e.getMessage()));
+        //}
+    }
+    @PostMapping("/{professorId}")
+    public ResponseEntity<?> criarProjeto(@RequestBody ProjetoDTO  projetoDTO,@PathVariable("professorId") Long professorId) throws NotFoundException {
             Projeto projeto = projetoMapper.convertFromProjetoDTO(projetoDTO);
-            return new ResponseEntity<>(projetoService.criarProjeto(projeto), HttpStatus.CREATED);
+            try {
+                return new ResponseEntity<>(projetoService.criarProjeto(projeto, professorId), HttpStatus.CREATED);
+    
+            } catch (NotFoundException e) {
+                return ((BodyBuilder) ResponseEntity.notFound()).body(new ErroRespostaGenericaDTO(e.getMessage()));
+    
+            }
     }
 
-    
     @PutMapping("/{id}")
-    public ResponseEntity<?> atualizarTurma(@PathVariable("id") Long id, @RequestBody ProjetoDTO  projetoDTO) throws NotFoundException {
+    public ResponseEntity<?> atualizarProjeto(@PathVariable("id") Long id, @RequestBody ProjetoDTO  projetoDTO) throws NotFoundException {
         try {
             Projeto projeto = projetoMapper.convertFromProjetoDTO(projetoDTO);
             return new ResponseEntity<>(projetoMapper.convertToProjetoDTO(projetoService.atualizarProjeto(id,projeto)), HttpStatus.OK);
@@ -69,7 +86,7 @@ public class ProjetoController {
     }
 
     @DeleteMapping("/{id}")
-    public @ResponseBody ResponseEntity<?> apagarTurma(@PathVariable ("id")  Long id) {
+    public @ResponseBody ResponseEntity<?> apagarProjeto(@PathVariable ("id")  Long id) {
         try {
             projetoService.apagarProjeto(id);
             return new ResponseEntity<>( HttpStatus.NO_CONTENT);
@@ -80,15 +97,4 @@ public class ProjetoController {
         }
     }
 
-    @PostMapping("/{professorId}")
-    public ResponseEntity<?> vincularProjetoProfResp(@RequestBody ProjetoDTO  projetoDTO,@PathVariable("professorId") Long professorId) throws NotFoundException {
-            Projeto projeto = projetoMapper.convertFromProjetoDTO(projetoDTO);
-            try {
-                return new ResponseEntity<>(projetoService.vincularProjetoProfResp(projeto, professorId), HttpStatus.CREATED);
-    
-            } catch (NotFoundException e) {
-                return ((BodyBuilder) ResponseEntity.notFound()).body(new ErroRespostaGenericaDTO(e.getMessage()));
-    
-            }
-    }
 }

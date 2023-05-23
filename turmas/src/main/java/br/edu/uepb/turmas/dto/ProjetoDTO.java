@@ -6,7 +6,7 @@ import lombok.Data;
 
 @Data
 public class ProjetoDTO {
-    private Long id;
+    private Long idProjeto;
     private String nome;
     private String descricao;
     private Aluno aluno;

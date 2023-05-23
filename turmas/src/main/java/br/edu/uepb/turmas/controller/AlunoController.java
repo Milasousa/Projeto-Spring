@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import br.edu.uepb.turmas.domain.Aluno;
+import br.edu.uepb.turmas.domain.IntegranteENUM;
 import br.edu.uepb.turmas.dto.AlunoDTO;
 import br.edu.uepb.turmas.dto.ErroRespostaGenericaDTO;
 import br.edu.uepb.turmas.exceptions.DadosIguaisException;
@@ -17,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.ResponseEntity.BodyBuilder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -80,6 +82,18 @@ public class AlunoController {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } catch (Exception e) {
             return ((BodyBuilder) ResponseEntity.notFound()).body(new ErroRespostaGenericaDTO(e.getMessage()));
+        }
+    }
+
+    @PatchMapping("{alunoId}/matricula/{projetoId}/{papel}")
+    public ResponseEntity<?> vincularProjetoAluno(@PathVariable("alunoId") Long alunoId,@PathVariable("projetoId") Long projetoId,
+            @PathVariable("papel") String papel ) throws NotFoundException {
+        try {
+            return new ResponseEntity<>(alunoService.vincularProjetoAluno(alunoId,projetoId, papel), HttpStatus.CREATED);
+
+        } catch (NotFoundException e) {
+            return ((BodyBuilder) ResponseEntity.notFound()).body(new ErroRespostaGenericaDTO(e.getMessage()));
+
         }
     }
 }
