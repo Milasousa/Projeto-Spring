@@ -10,6 +10,8 @@ import br.edu.uepb.turmas.dto.ErroRespostaGenericaDTO;
 import br.edu.uepb.turmas.exceptions.DadosIguaisException;
 import br.edu.uepb.turmas.mapper.AlunoMapper;
 import br.edu.uepb.turmas.services.AlunoService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import javassist.NotFoundException;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/alunos")
+@Api(value = "Aluno")
 public class AlunoController {
     @Autowired
     private AlunoMapper alunoMapper;
@@ -36,6 +39,7 @@ public class AlunoController {
     private AlunoService alunoService;
 
     @GetMapping
+    @ApiOperation(value = "Busca uma lista de todos os alunos")
     public List<AlunoDTO> getAlunos() {
         List<Aluno> alunos = alunoService.listAllAlunos();
         return alunos.stream()
