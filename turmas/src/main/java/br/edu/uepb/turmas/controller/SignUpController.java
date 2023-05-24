@@ -10,9 +10,11 @@ import org.springframework.web.bind.annotation.RestController;
 import br.edu.uepb.turmas.dto.UserDTO;
 import br.edu.uepb.turmas.mapper.UserMapper;
 import br.edu.uepb.turmas.services.UserService;
+import io.swagger.annotations.Api;
 
 @RestController
 @RequestMapping(produces = MediaType.APPLICATION_JSON_VALUE + "; charset=utf-8")
+@Api(value = "Sign Up")
 public class SignUpController {
     
     @Autowired

@@ -8,6 +8,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -51,14 +52,16 @@ public class Aluno {
     @Column(name="papel")
     private IntegranteENUM papel;
     
+    @ManyToOne(fetch = FetchType.EAGER,cascade = CascadeType.ALL)
+    @JoinColumn(name = "id", referencedColumnName = "id")
+    private Projeto projeto;
+
     @JsonIgnore
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany( fetch = FetchType.EAGER,cascade = CascadeType.ALL)
     @JoinColumn(name = "idMatriculaAluno", referencedColumnName = "idMatricula")
     private List<Turma> turma;
     
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "id_projeto")
-    private Projeto projeto;
+
 
     
 }

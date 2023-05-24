@@ -12,6 +12,8 @@ import org.springframework.data.repository.query.Param;
 @Repository
 public interface ProjetoRepository extends JpaRepository<Projeto, Long> {
 
-    @Query(value="SELECT A.ID_MATRICULA,A.NOME ,A.PAPEL,P.ID_PROJETO,P.DESCRICAO ,P.NOME  FROM ALUNOS AS A JOIN PROJETOS AS P ON A.ID_PROJETO = P.ID_PROJETO",nativeQuery = true)
-    List <Projeto> findAlunosByIdProjetoqueryBy(@Param("ID_PROJETO") Long projetoId,@Param("ID_PROJETO")  Long alunoId);
+    //@Query(value="SELECT A.ID_MATRICULA,A.NOME ,A.PAPEL,P.ID_PROJETO,P.DESCRICAO ,P.NOME  FROM ALUNOS AS A JOIN PROJETOS AS P ON A.ID_PROJETO = P.ID_PROJETO",nativeQuery = true)
+    //@Query(value="SELECT A.ID_MATRICULA,A.NOME ,A.PAPEL,P.ID_PROJETO,P.DESCRICAO ,P.NOME  FROM ALUNOS AS A JOIN PROJETOS AS P ON A.ID_PROJETO",nativeQuery = true)
+
+    //List <Projeto> findAlunosByIdProjetoqueryBy(@Param("ID_PROJETO") Long projetoId,@Param("ID_PROJETO")  Long alunoId);
 }

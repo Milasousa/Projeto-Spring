@@ -12,6 +12,8 @@ import br.edu.uepb.turmas.mapper.AlunoMapper;
 import br.edu.uepb.turmas.services.AlunoService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.Example;
+import io.swagger.annotations.ExampleProperty;
 import javassist.NotFoundException;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,6 +50,7 @@ public class AlunoController {
     }
 
     @GetMapping("/{id}")
+    @ApiOperation(value = "Busca um aluno pelo seu identificador")
     public ResponseEntity<?> getAlunosById(@PathVariable Long id) {
         try {
             return new ResponseEntity<>(alunoMapper.convertToAlunoDTO(alunoService.findById(id)), HttpStatus.OK);
@@ -57,6 +60,7 @@ public class AlunoController {
     }
 
     @PostMapping
+    @ApiOperation(value = "Cria um novo aluno")
     public ResponseEntity<?> criarAlunos(@RequestBody AlunoDTO alunoDTO) {
         try {
             Aluno aluno = alunoMapper.convertFromAlunoDTO(alunoDTO);
@@ -67,6 +71,7 @@ public class AlunoController {
     }
 
     @PutMapping("/{id}")
+    @ApiOperation(value = "Atualiza um aluno a partir do seu identificador")
     public ResponseEntity<?> atualizarAlunos(@PathVariable("id") Long id, @RequestBody AlunoDTO alunoDTO)
             throws NotFoundException {
         try {
@@ -79,6 +84,7 @@ public class AlunoController {
     }
 
     @DeleteMapping("/{id}")
+    @ApiOperation(value = "Exclui um aluno a partir do seu identificador")
     public ResponseEntity<?> apagarAlunos(@PathVariable Long id) throws NotFoundException {
 
         try {
@@ -90,6 +96,7 @@ public class AlunoController {
     }
 
     @PatchMapping("{alunoId}/matricula/{projetoId}/{papel}")
+    @ApiOperation(value = "Matricula um aluno em um projeto, a partir dos identificadores do aluno, projeto e papel ")
     public ResponseEntity<?> vincularProjetoAluno(@PathVariable("alunoId") Long alunoId,@PathVariable("projetoId") Long projetoId,
             @PathVariable("papel") String papel ) throws NotFoundException {
         try {

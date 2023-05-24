@@ -3,11 +3,17 @@ package br.edu.uepb.turmas.controller;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import br.edu.uepb.turmas.domain.Aluno;
 import br.edu.uepb.turmas.domain.Projeto;
+import br.edu.uepb.turmas.dto.AlunoDTO;
 import br.edu.uepb.turmas.dto.ErroRespostaGenericaDTO;
 import br.edu.uepb.turmas.dto.ProjetoDTO;
+import br.edu.uepb.turmas.mapper.AlunoMapper;
 import br.edu.uepb.turmas.mapper.ProjetoMapper;
+import br.edu.uepb.turmas.services.AlunoService;
 import br.edu.uepb.turmas.services.ProjetoService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import javassist.NotFoundException;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,15 +32,19 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/projetos")
+@Api(value = "Projeto")
 public class ProjetoController {
     @Autowired
     private ProjetoMapper projetoMapper;
-
+    @Autowired
+    private AlunoMapper alunoMapper;
     @Autowired
     private ProjetoService projetoService;
-
+    @Autowired
+    private AlunoService alunoService;
 
     @GetMapping
+    @ApiOperation(value = "Busca uma lista de todos os projetos")
     public List<ProjetoDTO> getProjetos() {
         List<Projeto> projeto = projetoService.listAllProjetos();
         return projeto.stream()
@@ -43,6 +53,7 @@ public class ProjetoController {
     }
 
     @GetMapping("/{id}")
+    @ApiOperation(value = "Busca um projeto pelo seu identificador")
     public ResponseEntity<?> getProjetosById(@PathVariable Long id) {
         try {
             return new ResponseEntity<>(projetoMapper.convertToProjetoDTO(projetoService.findById(id)), HttpStatus.OK);
@@ -50,19 +61,16 @@ public class ProjetoController {
             return ResponseEntity.badRequest().body(new ErroRespostaGenericaDTO(e.getMessage()));
         }
     }
-    @GetMapping("alunos/{projetoId}/{alunoId}")
-    public  List<ProjetoDTO> listAllAlunos(@PathVariable("projetoId") Long projetoId,@PathVariable("alunoId") Long alunoId) throws NotFoundException {
-      // try {
-            //return new ResponseEntity<>(projetoMapper.convertToProjetoDTO(projetoService.listAllAlunos(projetoId,alunoId)), HttpStatus.OK);
-            List<Projeto> projeto = projetoService.listAllAlunos(projetoId,alunoId);
+    @GetMapping("alunos")
+    public  List<AlunoDTO> listAllAlunos(){
+            List<Aluno> projeto = projetoService.listAllAlunos();
             return projeto.stream()
-            .map(projetoMapper::convertToProjetoDTO)
+            .map(alunoMapper::convertToAlunoDTO)
             .collect(Collectors.toList());
-        //} catch (NotFoundException e) {
-           // return ResponseEntity.badRequest().body(new ErroRespostaGenericaDTO(e.getMessage()));
-        //}
     }
+
     @PostMapping("/{professorId}")
+    @ApiOperation(value = "Cria um novo projeto")
     public ResponseEntity<?> criarProjeto(@RequestBody ProjetoDTO  projetoDTO,@PathVariable("professorId") Long professorId) throws NotFoundException {
             Projeto projeto = projetoMapper.convertFromProjetoDTO(projetoDTO);
             try {
@@ -75,6 +83,7 @@ public class ProjetoController {
     }
 
     @PutMapping("/{id}")
+    @ApiOperation(value = "Atualiza um projeto a partir do seu identificador")
     public ResponseEntity<?> atualizarProjeto(@PathVariable("id") Long id, @RequestBody ProjetoDTO  projetoDTO) throws NotFoundException {
         try {
             Projeto projeto = projetoMapper.convertFromProjetoDTO(projetoDTO);
@@ -86,6 +95,7 @@ public class ProjetoController {
     }
 
     @DeleteMapping("/{id}")
+    @ApiOperation(value = "Exclui um projeto a partir do seu identificador")
     public @ResponseBody ResponseEntity<?> apagarProjeto(@PathVariable ("id")  Long id) {
         try {
             projetoService.apagarProjeto(id);

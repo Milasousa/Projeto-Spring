@@ -8,6 +8,8 @@ import br.edu.uepb.turmas.dto.ErroRespostaGenericaDTO;
 import br.edu.uepb.turmas.dto.TurmaDTO;
 import br.edu.uepb.turmas.mapper.TurmaMapper;
 import br.edu.uepb.turmas.services.TurmaService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import javassist.NotFoundException;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/turmas")
+@Api(value = "Turma")
 public class TurmaController {
     @Autowired
     private TurmaMapper turmaMapper;
@@ -35,6 +38,7 @@ public class TurmaController {
     private TurmaService turmaService;
 
     @GetMapping
+    @ApiOperation(value = "Busca uma lista de todos as turmas")
     public List<TurmaDTO> getTurmas() {
         List<Turma> turmas = turmaService.listAllTurmas();
         return turmas.stream()
@@ -43,6 +47,7 @@ public class TurmaController {
     }
 
     @GetMapping("/{id}")
+    @ApiOperation(value = "Busca uma turma pelo seu identificador")
     public ResponseEntity<?> getTurmasById(@PathVariable Long id) {
         try {
             return new ResponseEntity<>(turmaMapper.convertToTurmaDTO(turmaService.findById(id)), HttpStatus.OK);
@@ -52,12 +57,14 @@ public class TurmaController {
     }
 
     @PostMapping
+    @ApiOperation(value = "Cria uma nova turma")
     public ResponseEntity<?> criarTurma(@RequestBody TurmaDTO turmaDTO) {
         Turma turma = turmaMapper.convertFromTurmaDTO(turmaDTO);
         return new ResponseEntity<>(turmaService.criarTurma(turma), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
+    @ApiOperation(value = "Atualiza uma turma a partir do seu identificador")
     public ResponseEntity<?> atualizarTurma(@PathVariable("id") Long id, @RequestBody TurmaDTO turmaDTO)
             throws NotFoundException {
         try {
@@ -71,6 +78,7 @@ public class TurmaController {
     }
 
     @DeleteMapping("/{id}")
+    @ApiOperation(value = "Exclui uma turma a partir do seu identificador")
     public @ResponseBody ResponseEntity<?> apagarTurma(@PathVariable("id") Long id) {
         try {
             turmaService.apagarTurma(id);
@@ -83,6 +91,7 @@ public class TurmaController {
     }
 
     @PatchMapping("/{turmaId}/alunos/{alunoId}")
+    @ApiOperation(value = "Vincula um aluno a uma turma, a partir dos seus identificadores")
     public ResponseEntity<?> vincularTurmaAluno(@PathVariable("turmaId") Long turmaId,
             @PathVariable("alunoId") Long alunoId) throws NotFoundException {
         try {
@@ -95,6 +104,7 @@ public class TurmaController {
     }
 
     @PatchMapping("/{turmaId}/professores/{profId}")
+    @ApiOperation(value = "Vincula um professor a uma turma, a partir dos seus identificadores")
     public ResponseEntity<?> vincularTurmaProfessor(@PathVariable("turmaId") Long turmaId,
             @PathVariable("profId") Long profId) throws NotFoundException {
         try {
@@ -106,6 +116,7 @@ public class TurmaController {
     }
 
     @PatchMapping("/{turmaId}/matriculas/{alunoId}/turmas/{profId}")
+    @ApiOperation(value = "Vincula um aluno e um professor a uma turma, a partir dos seus identificadores")
     public ResponseEntity<?> vincularTurma(@PathVariable("turmaId") Long turmaId, @PathVariable("alunoId") Long alunoId,
             @PathVariable("profId") Long profId) throws NotFoundException {
         try {
