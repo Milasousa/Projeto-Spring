@@ -33,7 +33,7 @@ public class AlunoService {
     }
 
     public Aluno criarAlunos(Aluno aluno) throws DadosIguaisException {
-        if ((verificarPorId(aluno.getIdMatricula())) || (verificarPorEmail(aluno.getEmail())))
+        if ((verificarPorId(aluno.getId())) || (verificarPorEmail(aluno.getEmail())))
             throw new DadosIguaisException("Já existe um Aluno com essa matricula ou e-mail");
         return alunoRepository.save(aluno);
 

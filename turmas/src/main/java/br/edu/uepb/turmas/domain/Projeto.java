@@ -43,13 +43,10 @@ public class Projeto {
     private String descricao;
 
     @OneToOne
-    //@PrimaryKeyJoinColumn
-    @JoinColumn(name = "fk_idMatriculaProfessor")
     private Professor professor;
 
-    @OneToMany(mappedBy = "projeto",cascade = CascadeType.ALL)
-    //(cascade = CascadeType.ALL)
-    //@JoinColumn(name = "id_projeto")
+
+    @OneToMany(mappedBy = "projeto")
     private List<Aluno> aluno;
 
 }

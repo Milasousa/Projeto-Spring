@@ -7,5 +7,7 @@ import br.edu.uepb.turmas.domain.User;
 public interface UserRepository extends JpaRepository<User, Long> {
 
     User findByUsername(String username);
+
+    boolean findByauthority(String authority);
     
 }

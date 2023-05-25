@@ -70,7 +70,7 @@ public class TurmaService {
         try {
             Professor prof = professorrepository.findById(profId).get();
             Turma turma = turmarepository.findById(turmaId).get();
-            turma.setProf(prof);
+            turma.setProfessor(prof);
             return turmarepository.save(turma);
         } catch (NoSuchElementException e) {
             throw new NotFoundException("Não foi encontrado, o identificador informado");
@@ -84,7 +84,7 @@ public class TurmaService {
             Aluno aluno = alunorepository.findById(alunoId).get();
             Turma turma = turmarepository.findById(turmaId).get();
             turma.setAluno(aluno);
-            turma.setProf(prof);
+            turma.setProfessor(prof);
             return turmarepository.save(turma);
         } catch (NoSuchElementException e) {
             throw new NotFoundException("Não foi encontrado, o identificador informado");

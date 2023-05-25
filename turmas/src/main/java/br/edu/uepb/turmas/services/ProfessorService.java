@@ -28,7 +28,7 @@ public class ProfessorService {
         return professorRepository.findAll();
     } 
     public Professor criarProfessor(Professor professor) throws DadosIguaisException {
-        if ((verificarPorId(professor.getIdMatricula())) || (verificarPorEmail(professor.getEmail())))
+        if ((verificarPorId(professor.getId())) || (verificarPorEmail(professor.getEmail())))
             throw new DadosIguaisException("Já existe um Professor com essa matricula ou e-mail");
         return professorRepository.save(professor);
 

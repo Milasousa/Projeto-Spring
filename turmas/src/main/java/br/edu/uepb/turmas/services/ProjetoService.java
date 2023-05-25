@@ -2,6 +2,8 @@ package br.edu.uepb.turmas.services;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import br.edu.uepb.turmas.domain.Aluno;
@@ -24,9 +26,17 @@ public class ProjetoService {
             return projetoRepository.findAll();
         }
         
-        public  List<Aluno> listAllAlunos(){
-            projetoRepository.findAll();
-            return alunorrepository.findAlunosByIdProjetoqueryBy();
+        public List<Aluno> getAllAlunos(Long projetoId)throws NotFoundException{
+                try {
+                    if ((projetoRepository.findById(projetoId) == null)&&(alunorrepository.findByprojeto_id(projetoId)==null)) {
+                        throw new NotFoundException("Não foi encontrado, o projeto com o identificador informado.");
+                    } else {
+                        return alunorrepository.findAlunosByIdProjetoqueryBy();
+                    }
+                } catch (NotFoundException e) {
+                    throw new NotFoundException("Não foi encontrado, o projeto com o identificador informado.");
+        
+                }
         }
         public Projeto criarProjeto(Projeto projeto,Long ProfessorId) throws NotFoundException {
             try {

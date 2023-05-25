@@ -16,7 +16,7 @@ import io.swagger.annotations.Api;
 @RequestMapping(produces = MediaType.APPLICATION_JSON_VALUE + "; charset=utf-8")
 @Api(value = "Sign Up")
 public class SignUpController {
-    
+
     @Autowired
     private UserService userService;
 
@@ -24,7 +24,7 @@ public class SignUpController {
     private UserMapper userMapper;
 
     @PostMapping("/signup")
-    public void signUp(@RequestBody UserDTO userDTO){
+    public void signUp(@RequestBody UserDTO userDTO) {
         userService.signUpUser(userMapper.convertFromUserDTO(userDTO));
     }
 }

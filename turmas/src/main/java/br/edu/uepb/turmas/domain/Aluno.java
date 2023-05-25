@@ -35,13 +35,13 @@ import lombok.Setter;
 @Entity
 
 @Table(name = "alunos", uniqueConstraints = {
-        @UniqueConstraint(columnNames = { "email", "IdMatricula" })
+        @UniqueConstraint(columnNames = { "email", "id" })
 })
 public class Aluno {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long IdMatricula;
+    private Long id;
 
     @Column(name = "nome", nullable = false)
     private String nome;
@@ -51,17 +51,14 @@ public class Aluno {
     @Enumerated(EnumType.STRING)
     @Column(name="papel")
     private IntegranteENUM papel;
+
     
-    @ManyToOne(fetch = FetchType.EAGER,cascade = CascadeType.ALL)
-    @JoinColumn(name = "id", referencedColumnName = "id")
+    @ManyToOne
+    @JoinColumn(name = "projeto_id")
     private Projeto projeto;
-
-    @JsonIgnore
-    @OneToMany( fetch = FetchType.EAGER,cascade = CascadeType.ALL)
-    @JoinColumn(name = "idMatriculaAluno", referencedColumnName = "idMatricula")
-    private List<Turma> turma;
     
-
-
+    @JsonIgnore
+    @OneToMany( mappedBy = "aluno")
+    private List<Turma> turma;  
     
 }

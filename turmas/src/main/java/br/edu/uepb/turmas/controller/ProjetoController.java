@@ -1,6 +1,8 @@
 package br.edu.uepb.turmas.controller;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import br.edu.uepb.turmas.domain.Aluno;
@@ -8,8 +10,10 @@ import br.edu.uepb.turmas.domain.Projeto;
 import br.edu.uepb.turmas.dto.AlunoDTO;
 import br.edu.uepb.turmas.dto.ErroRespostaGenericaDTO;
 import br.edu.uepb.turmas.dto.ProjetoDTO;
+import br.edu.uepb.turmas.exceptions.NaoEncontradoException;
 import br.edu.uepb.turmas.mapper.AlunoMapper;
 import br.edu.uepb.turmas.mapper.ProjetoMapper;
+import br.edu.uepb.turmas.repository.ProjetoRepository;
 import br.edu.uepb.turmas.services.AlunoService;
 import br.edu.uepb.turmas.services.ProjetoService;
 import io.swagger.annotations.Api;
@@ -41,7 +45,7 @@ public class ProjetoController {
     @Autowired
     private ProjetoService projetoService;
     @Autowired
-    private AlunoService alunoService;
+    private ProjetoRepository projetoRepository;
 
     @GetMapping
     @ApiOperation(value = "Busca uma lista de todos os projetos")
@@ -61,33 +65,37 @@ public class ProjetoController {
             return ResponseEntity.badRequest().body(new ErroRespostaGenericaDTO(e.getMessage()));
         }
     }
-    @GetMapping("alunos")
-    public  List<AlunoDTO> listAllAlunos(){
-            List<Aluno> projeto = projetoService.listAllAlunos();
-            return projeto.stream()
-            .map(alunoMapper::convertToAlunoDTO)
-            .collect(Collectors.toList());
+
+    @GetMapping("/alunos/{projetoId}")
+    public List<AlunoDTO> getAllAlunos(@PathVariable(value = "projetoId") Long projetoId) throws NotFoundException {
+        List<Aluno> projeto = projetoService.getAllAlunos(projetoId);
+        return projeto.stream()
+                .map(alunoMapper::convertToAlunoDTO)
+                .collect(Collectors.toList());
     }
 
     @PostMapping("/{professorId}")
     @ApiOperation(value = "Cria um novo projeto")
-    public ResponseEntity<?> criarProjeto(@RequestBody ProjetoDTO  projetoDTO,@PathVariable("professorId") Long professorId) throws NotFoundException {
-            Projeto projeto = projetoMapper.convertFromProjetoDTO(projetoDTO);
-            try {
-                return new ResponseEntity<>(projetoService.criarProjeto(projeto, professorId), HttpStatus.CREATED);
-    
-            } catch (NotFoundException e) {
-                return ((BodyBuilder) ResponseEntity.notFound()).body(new ErroRespostaGenericaDTO(e.getMessage()));
-    
-            }
+    public ResponseEntity<?> criarProjeto(@RequestBody ProjetoDTO projetoDTO,
+            @PathVariable("professorId") Long professorId) throws NotFoundException {
+        Projeto projeto = projetoMapper.convertFromProjetoDTO(projetoDTO);
+        try {
+            return new ResponseEntity<>(projetoService.criarProjeto(projeto, professorId), HttpStatus.CREATED);
+
+        } catch (NotFoundException e) {
+            return ((BodyBuilder) ResponseEntity.notFound()).body(new ErroRespostaGenericaDTO(e.getMessage()));
+
+        }
     }
 
     @PutMapping("/{id}")
     @ApiOperation(value = "Atualiza um projeto a partir do seu identificador")
-    public ResponseEntity<?> atualizarProjeto(@PathVariable("id") Long id, @RequestBody ProjetoDTO  projetoDTO) throws NotFoundException {
+    public ResponseEntity<?> atualizarProjeto(@PathVariable("id") Long id, @RequestBody ProjetoDTO projetoDTO)
+            throws NotFoundException {
         try {
             Projeto projeto = projetoMapper.convertFromProjetoDTO(projetoDTO);
-            return new ResponseEntity<>(projetoMapper.convertToProjetoDTO(projetoService.atualizarProjeto(id,projeto)), HttpStatus.OK);
+            return new ResponseEntity<>(projetoMapper.convertToProjetoDTO(projetoService.atualizarProjeto(id, projeto)),
+                    HttpStatus.OK);
         } catch (NotFoundException e) {
             return ((BodyBuilder) ResponseEntity.notFound()).body(new ErroRespostaGenericaDTO(e.getMessage()));
 
@@ -96,10 +104,10 @@ public class ProjetoController {
 
     @DeleteMapping("/{id}")
     @ApiOperation(value = "Exclui um projeto a partir do seu identificador")
-    public @ResponseBody ResponseEntity<?> apagarProjeto(@PathVariable ("id")  Long id) {
+    public @ResponseBody ResponseEntity<?> apagarProjeto(@PathVariable("id") Long id) {
         try {
             projetoService.apagarProjeto(id);
-            return new ResponseEntity<>( HttpStatus.NO_CONTENT);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 
         } catch (NotFoundException e) {
             return ((BodyBuilder) ResponseEntity.notFound()).body(new ErroRespostaGenericaDTO(e.getMessage()));

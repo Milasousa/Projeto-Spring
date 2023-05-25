@@ -2,12 +2,16 @@ package br.edu.uepb.turmas.domain;
 
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -35,11 +39,14 @@ public class Turma {
 
     @Column(name = "sala", nullable = false)
     private String sala;
+    
+    @JsonIgnore
     @ManyToOne
-    @JoinColumn(name = "idMatriculaProfessor")
-    private Professor prof;
-
-    @ManyToOne
-    @JoinColumn(name = "idMatriculaAluno")
+    @JoinColumn(name = "aluno_id")
     private Aluno aluno;
+
+    @JsonIgnore
+    @ManyToOne
+    @JoinColumn(name = "professor_id")
+    private Professor professor;
 }

@@ -17,4 +17,6 @@ public interface AlunoRepository extends JpaRepository<Aluno, Long> {
     boolean existsByemail(String email);
     @Query(value="SELECT * FROM ALUNOS,PROJETOS",nativeQuery = true)
     List<Aluno> findAlunosByIdProjetoqueryBy();
+    
+    Object findByprojeto_id(Long projetoId);
 }

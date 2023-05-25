@@ -34,13 +34,13 @@ import lombok.Setter;
 @AllArgsConstructor
 @Builder
 @Table(name = "professores", uniqueConstraints = {
-        @UniqueConstraint(columnNames = { "email", "idMatricula" })
+        @UniqueConstraint(columnNames = { "email", "id" })
 })
 public class Professor {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long idMatricula;
+    private Long id;
 
     @Column(name = "nome", nullable = false)
     private String nome;
@@ -51,14 +51,13 @@ public class Professor {
     @Column(name = "email", nullable = false)
     private String email;
     
-    @JsonIgnore
-    @OneToOne(mappedBy = "professor",cascade = CascadeType.ALL)
-    @JoinColumn(name = "fk_idProjeto")
+ 
+    @OneToOne(mappedBy = "professor")
+    @JoinColumn(name = "projeto_id")
     private Projeto projetos;
     
     @JsonIgnore
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "idMatriculaProfessor", referencedColumnName = "idMatricula")
-    private List<Turma> turma;
-
+    @OneToMany( mappedBy = "professor")
+    private List<Turma> turma;  
+    
 }

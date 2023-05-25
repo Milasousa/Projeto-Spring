@@ -97,10 +97,12 @@ public class AlunoController {
 
     @PatchMapping("{alunoId}/matricula/{projetoId}/{papel}")
     @ApiOperation(value = "Matricula um aluno em um projeto, a partir dos identificadores do aluno, projeto e papel ")
-    public ResponseEntity<?> vincularProjetoAluno(@PathVariable("alunoId") Long alunoId,@PathVariable("projetoId") Long projetoId,
-            @PathVariable("papel") String papel ) throws NotFoundException {
+    public ResponseEntity<?> vincularProjetoAluno(@PathVariable("alunoId") Long alunoId,
+            @PathVariable("projetoId") Long projetoId,
+            @PathVariable("papel") String papel) throws NotFoundException {
         try {
-            return new ResponseEntity<>(alunoService.vincularProjetoAluno(alunoId,projetoId, papel), HttpStatus.CREATED);
+            return new ResponseEntity<>(alunoService.vincularProjetoAluno(alunoId, projetoId, papel),
+                    HttpStatus.CREATED);
 
         } catch (NotFoundException e) {
             return ((BodyBuilder) ResponseEntity.notFound()).body(new ErroRespostaGenericaDTO(e.getMessage()));
