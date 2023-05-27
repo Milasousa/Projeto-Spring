@@ -55,10 +55,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.headers().frameOptions().sameOrigin();
         http.authorizeRequests()
                 .antMatchers(AUTH_WHITELIST).permitAll()
-                .mvcMatchers("/alunos/**").hasAnyRole("ADMIN", "USER")
-                .mvcMatchers("/professores/**").hasAnyRole("ADMIN", "USER")
-                .mvcMatchers(HttpMethod.GET, "/projetos/**").hasAnyRole("USER", "COORDINATOR", "ADMIN")
-                .mvcMatchers("/projetos/**").hasAnyRole("COORDINATOR", "ADMIN")
+                .mvcMatchers(HttpMethod.POST,"/alunos/**").permitAll()
+                .mvcMatchers(HttpMethod.POST,"/professores/**").permitAll()
+                .mvcMatchers("/projetos/**").hasAuthority("ROLE_PROFESSOR")
+                .mvcMatchers("/alunos/**").hasAuthority("ROLE_PROFESSOR")
+                .mvcMatchers(HttpMethod.GET, "/alunos/**").hasAuthority("ROLE_ALUNO")
+                .mvcMatchers(HttpMethod.GET, "/projetos/**").hasAnyRole( "ROLE_ALUNO")
                 .anyRequest().authenticated();
     }
 }

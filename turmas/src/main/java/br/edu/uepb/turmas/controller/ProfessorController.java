@@ -3,6 +3,8 @@ package br.edu.uepb.turmas.controller;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -58,10 +60,10 @@ public class ProfessorController {
 
     @PostMapping
     @ApiOperation(value = "Cria um novo professor")
-    public ResponseEntity<?> criarProfessor(@RequestBody ProfessorDTO professorDTO) {
+    public ResponseEntity<?> criarProfessor(HttpServletRequest request,@RequestBody ProfessorDTO professorDTO) {
         try {
             Professor professor = professorMapper.convertFromProfessorDTO(professorDTO);
-            return new ResponseEntity<>(professorService.criarProfessor(professor), HttpStatus.CREATED);
+            return new ResponseEntity<>(professorService.criarProfessor(professor,professor), HttpStatus.CREATED);
         } catch (DadosIguaisException e) {
             return ResponseEntity.badRequest().body(new ErroRespostaGenericaDTO(e.getMessage()));
         }

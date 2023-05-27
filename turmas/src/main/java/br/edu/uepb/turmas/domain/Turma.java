@@ -39,7 +39,7 @@ public class Turma {
 
     @Column(name = "sala", nullable = false)
     private String sala;
-    
+
     @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "aluno_id")

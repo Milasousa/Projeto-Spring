@@ -4,18 +4,24 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import javassist.NotFoundException;
 import br.edu.uepb.turmas.domain.Professor;
+import br.edu.uepb.turmas.domain.User;
 import br.edu.uepb.turmas.exceptions.DadosIguaisException;
 import br.edu.uepb.turmas.repository.ProfessorRepository;
+import br.edu.uepb.turmas.repository.UserRepository;
 
 
 @Service
 public class ProfessorService {
     @Autowired
     private ProfessorRepository professorRepository;
-    
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
     public boolean verificarPorId(Long id) {
         return professorRepository.existsById(id);
     }
@@ -27,10 +33,21 @@ public class ProfessorService {
     public List<Professor> listAllProfessores() {
         return professorRepository.findAll();
     } 
-    public Professor criarProfessor(Professor professor) throws DadosIguaisException {
+    public Professor criarProfessor(User user,Professor professor) throws DadosIguaisException {
         if ((verificarPorId(professor.getId())) || (verificarPorEmail(professor.getEmail())))
             throw new DadosIguaisException("Já existe um Professor com essa matricula ou e-mail");
-        return professorRepository.save(professor);
+            else if(userRepository.findByUsername(user.getUsername()) != null){
+                throw new DadosIguaisException("Já existe um usuário com esse username");
+            }
+            //User user=userRepository.findByUsername(user.getUsername);
+            user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
+            //userRepository.save(setPassword(bCryptPasswordEncoder.encode(user.getPassword())));
+            user.setUsername(user.getUsername());
+            //userRepository.saveAll(user.getUsername());
+            user.setAuthority("ROLE_PROFESSOR");
+            //userRepository.save(userService.);
+            //userRepository.save(user);
+            return professorRepository.save(professor);
 
     }
     public Professor atualizarProfessor( Long id, Professor professor) throws NotFoundException{

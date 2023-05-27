@@ -4,21 +4,36 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import javassist.NotFoundException;
+import br.edu.uepb.turmas.controller.AlunoController;
 import br.edu.uepb.turmas.domain.Aluno;
 import br.edu.uepb.turmas.domain.IntegranteENUM;
 import br.edu.uepb.turmas.domain.Projeto;
+import br.edu.uepb.turmas.domain.User;
 import br.edu.uepb.turmas.exceptions.DadosIguaisException;
 import br.edu.uepb.turmas.repository.AlunoRepository;
 import br.edu.uepb.turmas.repository.ProjetoRepository;
+import br.edu.uepb.turmas.repository.UserRepository;
 
 @Service
+//@SpringBootApplication(scanBasePackages={
+   // "br.edu.uepb.turmas.domain.User", "br.edu.uepb.turmas.repository.UserRepository"})
 public class AlunoService {
     @Autowired
     private AlunoRepository alunoRepository;
     @Autowired
     private ProjetoRepository projetoRepository;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private UserService userService;
+    @Autowired
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
+   // @Autowired
+    //private User user;
 
     public boolean verificarPorId(Long id) {
         return alunoRepository.existsById(id);
@@ -32,9 +47,20 @@ public class AlunoService {
         return alunoRepository.findAll();
     }
 
-    public Aluno criarAlunos(Aluno aluno) throws DadosIguaisException {
+    public Aluno criarAlunos( User user,Aluno aluno) throws DadosIguaisException {
         if ((verificarPorId(aluno.getId())) || (verificarPorEmail(aluno.getEmail())))
             throw new DadosIguaisException("Já existe um Aluno com essa matricula ou e-mail");
+        else if(userRepository.findByUsername(user.getUsername()) != null){
+            throw new DadosIguaisException("Já existe um usuário com esse username");
+        }
+        //User user=userRepository.findByUsername(user.getUsername);
+        user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
+        //userRepository.save(setPassword(bCryptPasswordEncoder.encode(user.getPassword())));
+        user.setUsername(user.getUsername());
+        //userRepository.saveAll(user.getUsername());
+        user.setAuthority("ROLE_ALUNO");
+        //userRepository.save(userService.);
+        //userRepository.save(user);
         return alunoRepository.save(aluno);
 
     }
@@ -72,7 +98,7 @@ public class AlunoService {
                 Aluno aluno = alunoRepository.findById(alunoId).get();
                 Projeto projeto = projetoRepository.findById(projetoId).get();
                 aluno.setProjeto(projeto);
-                aluno.setPapel(IntegranteENUM.valueOf(papel));
+                aluno.setFuncao(IntegranteENUM.valueOf(papel));
                 return alunoRepository.save(aluno);
             } else {
                 throw new NoSuchElementException("Papel Inválido ou não encontrado");

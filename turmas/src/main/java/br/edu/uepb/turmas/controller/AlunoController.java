@@ -3,8 +3,11 @@ package br.edu.uepb.turmas.controller;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.servlet.http.HttpServletRequest;
+
 import br.edu.uepb.turmas.domain.Aluno;
 import br.edu.uepb.turmas.domain.IntegranteENUM;
+import br.edu.uepb.turmas.domain.User;
 import br.edu.uepb.turmas.dto.AlunoDTO;
 import br.edu.uepb.turmas.dto.ErroRespostaGenericaDTO;
 import br.edu.uepb.turmas.exceptions.DadosIguaisException;
@@ -22,12 +25,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.ResponseEntity.BodyBuilder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -61,15 +67,16 @@ public class AlunoController {
 
     @PostMapping
     @ApiOperation(value = "Cria um novo aluno")
-    public ResponseEntity<?> criarAlunos(@RequestBody AlunoDTO alunoDTO) {
+    public ResponseEntity<?> criarAlunos(HttpServletRequest request,@RequestBody AlunoDTO alunoDTO) {
         try {
+            //request.getAttribute("username");
             Aluno aluno = alunoMapper.convertFromAlunoDTO(alunoDTO);
-            return new ResponseEntity<>(alunoService.criarAlunos(aluno), HttpStatus.CREATED);
+            return new ResponseEntity<>(alunoService.criarAlunos(aluno, aluno), HttpStatus.CREATED);
         } catch (DadosIguaisException e) {
             return ResponseEntity.badRequest().body(new ErroRespostaGenericaDTO(e.getMessage()));
         }
     }
-
+   
     @PutMapping("/{id}")
     @ApiOperation(value = "Atualiza um aluno a partir do seu identificador")
     public ResponseEntity<?> atualizarAlunos(@PathVariable("id") Long id, @RequestBody AlunoDTO alunoDTO)

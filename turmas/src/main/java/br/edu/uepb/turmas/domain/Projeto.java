@@ -30,7 +30,9 @@ import lombok.Setter;
 @NoArgsConstructor
 @Builder
 @Entity
-@Table(name = "projetos")
+@Table(name = "projetos", uniqueConstraints = {
+    @UniqueConstraint(columnNames = { "id" })
+})
 public class Projeto {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -44,7 +46,6 @@ public class Projeto {
 
     @OneToOne
     private Professor professor;
-
 
     @OneToMany(mappedBy = "projeto")
     private List<Aluno> aluno;

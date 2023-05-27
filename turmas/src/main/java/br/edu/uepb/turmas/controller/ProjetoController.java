@@ -67,6 +67,7 @@ public class ProjetoController {
     }
 
     @GetMapping("/alunos/{projetoId}")
+    @ApiOperation(value = "Listar os alunos associados ao projeto")
     public List<AlunoDTO> getAllAlunos(@PathVariable(value = "projetoId") Long projetoId) throws NotFoundException {
         List<Aluno> projeto = projetoService.getAllAlunos(projetoId);
         return projeto.stream()

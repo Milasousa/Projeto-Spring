@@ -7,6 +7,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import br.edu.uepb.turmas.domain.Aluno;
+import br.edu.uepb.turmas.domain.IntegranteENUM;
 import br.edu.uepb.turmas.domain.Professor;
 import br.edu.uepb.turmas.domain.Projeto;
 import br.edu.uepb.turmas.repository.AlunoRepository;
@@ -42,6 +43,8 @@ public class ProjetoService {
             try {
                 Professor professor = professorrepository.findById(ProfessorId).get();
                 projeto.setProfessor(professor);
+                professor.setFuncao(IntegranteENUM.COORDINATOR);
+                professorrepository.save(professor);
                 return projetoRepository.save(projeto);
             } catch (NoSuchElementException e) {
                 throw new NotFoundException("Não foi encontrado, o professor com o identificador informado.");

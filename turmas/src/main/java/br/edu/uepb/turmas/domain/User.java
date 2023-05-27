@@ -10,28 +10,37 @@ import javax.persistence.GenerationType;
 import javax.persistence.Table;
 
 import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 @Data
 @Builder
 @Entity
 @Table(name = "users")
-@AllArgsConstructor
-@NoArgsConstructor
+@Inheritance(strategy = InheritanceType.JOINED)
+
 public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    @Column(unique = true, nullable = false)
+    @Column(nullable = false)
     private String username;
-    @Column(unique = true, nullable = false)
+    @Column(nullable = false)
     private String password;
     private String authority;
 

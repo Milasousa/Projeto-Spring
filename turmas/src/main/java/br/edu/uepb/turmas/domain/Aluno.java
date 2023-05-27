@@ -31,13 +31,12 @@ import lombok.Setter;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
 @Entity
 
 @Table(name = "alunos", uniqueConstraints = {
         @UniqueConstraint(columnNames = { "email", "id" })
 })
-public class Aluno {
+public class Aluno extends User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -49,16 +48,14 @@ public class Aluno {
     @Column(name = "email", nullable = false)
     private String email;
     @Enumerated(EnumType.STRING)
-    @Column(name="papel")
-    private IntegranteENUM papel;
+    @Column(name = "funcao")
+    private IntegranteENUM funcao;
 
-    
     @ManyToOne
     @JoinColumn(name = "projeto_id")
     private Projeto projeto;
-    
     @JsonIgnore
-    @OneToMany( mappedBy = "aluno")
-    private List<Turma> turma;  
-    
+    @OneToMany(mappedBy = "aluno")
+    private List<Turma> turma;
+
 }
