@@ -3,17 +3,14 @@ package br.edu.uepb.turmas.domain;
 import java.util.List;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
@@ -57,5 +54,15 @@ public class Aluno extends User {
     @JsonIgnore
     @OneToMany(mappedBy = "aluno")
     private List<Turma> turma;
+    @Builder(builderMethodName = "AlunoBuilder",builderClassName = "AlunoBuilder")
+    public Aluno(Long id, String username, String password, String authority, Long id2, String nome, String email,
+            IntegranteENUM funcao) {
+        super(id, username, password, authority);
+        id = id2;
+        this.nome = nome;
+        this.email = email;
+        this.funcao = funcao;
+    }
+
 
 }

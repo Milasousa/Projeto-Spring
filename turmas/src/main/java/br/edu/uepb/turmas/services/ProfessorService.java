@@ -33,29 +33,31 @@ public class ProfessorService {
     public List<Professor> listAllProfessores() {
         return professorRepository.findAll();
     } 
-    public Professor criarProfessor(User user,Professor professor) throws DadosIguaisException {
+    public Professor criarProfessor(Professor professor) throws DadosIguaisException {
+        User user=professor;
         if ((verificarPorId(professor.getId())) || (verificarPorEmail(professor.getEmail())))
             throw new DadosIguaisException("Já existe um Professor com essa matricula ou e-mail");
             else if(userRepository.findByUsername(user.getUsername()) != null){
                 throw new DadosIguaisException("Já existe um usuário com esse username");
             }
-            //User user=userRepository.findByUsername(user.getUsername);
             user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
-            //userRepository.save(setPassword(bCryptPasswordEncoder.encode(user.getPassword())));
             user.setUsername(user.getUsername());
-            //userRepository.saveAll(user.getUsername());
             user.setAuthority("ROLE_PROFESSOR");
-            //userRepository.save(userService.);
-            //userRepository.save(user);
             return professorRepository.save(professor);
 
     }
-    public Professor atualizarProfessor( Long id, Professor professor) throws NotFoundException{
+    public Professor atualizarProfessor( Long id, Professor professor) throws NotFoundException, DadosIguaisException{
+        User user=professor;
         try {
             if ((professorRepository.findById(id).get()) == null) {
                 throw new NotFoundException ("Não foi encontrado nenhum Professor com essa matricula: "+ id);
 
+            }else if(userRepository.findByUsername(user.getUsername()) != null){
+                throw new DadosIguaisException("Já existe um usuário com esse username");
             }
+            user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
+            user.setUsername(user.getUsername());
+            user.setAuthority("ROLE_PROFESSOR");
             return professorRepository.save(professor);
         } catch (NoSuchElementException e) {
             throw new  NotFoundException ("Não foi encontrado nenhum Professor com essa matricula: "+ id);

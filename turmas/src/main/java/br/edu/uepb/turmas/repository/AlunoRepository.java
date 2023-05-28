@@ -11,8 +11,8 @@ import br.edu.uepb.turmas.domain.Aluno;
 public interface AlunoRepository extends JpaRepository<Aluno, Long> {
     Optional<Aluno> findBynome(String email);
     boolean existsByemail(String email);
-    @Query(value="SELECT * FROM ALUNOS,PROJETOS",nativeQuery = true)
+    @Query(value="SELECT * FROM ALUNOS",nativeQuery = true)
     List<Aluno> findAlunosByIdProjetoqueryBy();
     
-    Object findByprojeto_id(Long projetoId);
+    List<Aluno>  findByprojeto_id(Long projetoId);
 }

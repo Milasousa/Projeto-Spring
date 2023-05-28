@@ -8,8 +8,6 @@ import org.springframework.stereotype.Component;
 import br.edu.uepb.turmas.domain.User;
 import br.edu.uepb.turmas.repository.UserRepository;
 
-import java.util.Collections;
-
 @Component
 public class UserDetailsServiceImpl implements UserDetailsService {
 

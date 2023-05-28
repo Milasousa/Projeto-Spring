@@ -1,8 +1,6 @@
 package br.edu.uepb.turmas.controller;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import br.edu.uepb.turmas.domain.Aluno;
@@ -10,11 +8,8 @@ import br.edu.uepb.turmas.domain.Projeto;
 import br.edu.uepb.turmas.dto.AlunoDTO;
 import br.edu.uepb.turmas.dto.ErroRespostaGenericaDTO;
 import br.edu.uepb.turmas.dto.ProjetoDTO;
-import br.edu.uepb.turmas.exceptions.NaoEncontradoException;
 import br.edu.uepb.turmas.mapper.AlunoMapper;
 import br.edu.uepb.turmas.mapper.ProjetoMapper;
-import br.edu.uepb.turmas.repository.ProjetoRepository;
-import br.edu.uepb.turmas.services.AlunoService;
 import br.edu.uepb.turmas.services.ProjetoService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -44,9 +39,6 @@ public class ProjetoController {
     private AlunoMapper alunoMapper;
     @Autowired
     private ProjetoService projetoService;
-    @Autowired
-    private ProjetoRepository projetoRepository;
-
     @GetMapping
     @ApiOperation(value = "Busca uma lista de todos os projetos")
     public List<ProjetoDTO> getProjetos() {
